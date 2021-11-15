@@ -128,7 +128,8 @@ class Cube(object):
         self.faces = []
 
         # Faces
-        
+        self.faces.append(Face(center + V3(size.x/2, 0, 0), V3(1, 0, 0), material))
+        self.faces.append(Face(center + V3(-size.x/2, 0, 0), V3(-1, 0, 0), material))
 
         self.faces.append(Face(center + V3(0, size.y/2, 0), V3(0, 1, 0), material))
         self.faces.append(Face(center + V3(0, -size.y/2, 0), V3(0, -1, 0), material))
@@ -160,5 +161,25 @@ class Cube(object):
         return intersect
 
 class Triangle(object):
-    def __init__(self, points=None):
-        print('hola')
+    def __init__(self, points, normals, material):
+        self.A, self.B, self.C = points
+        self.center = (points[0] + points[1] + points[2]) / 3
+        self.normal = (normals[0] + normals[1] + normals[2]) / 3
+        self.material = material
+        
+    def ray_intersect(self, origin, direction):
+        den = direction ** self.normal
+        if abs(den) > 0.01:
+            d = (self.normal ** (self.center - origin)) / den
+            if d > 0:
+                hit = origin + (direction * d)
+
+                # Here goes de varicentric
+                w, v, u = barycentric(self.A, self.B, self.C, hit)
+                if w < 0 or v < 0 or u < 0: return None
+
+                return Intersect(
+                    distance = d,
+                    point= hit,
+                    normal= self.normal
+                )

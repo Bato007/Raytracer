@@ -69,6 +69,64 @@ class V3(object):
             9999999 if self.z == 0 else 1 / self.z
         )
 
+class Matrix(object):
+    # Las matrices se leen m x n
+    def __init__(self, matrix):
+        self.matrix = matrix
+        self.m = len(matrix)
+        self.n = len(matrix[0]) if self.m > 0 else 0
+
+    def __add__(self, o):
+        if (self.n != o.n) or (self.m != o.m):
+            return None
+        
+        result = []
+        # Se restan las coordenadas
+        for m in range(self.m):
+            result.append([])
+            for n in range(self.n):
+                result[m].append(self.matrix[m][n] + o.matrix[m][n])
+        return Matrix(result)
+    
+    def __sub__(self, o):
+        if (self.n != o.n) or (self.m != o.m):
+            return None
+        
+        result = []
+        # Se restan las coordenadas
+        for m in range(self.m):
+            result.append([])
+            for n in range(self.n):
+                result[m].append(self.matrix[m][n] - o.matrix[m][n])
+        return Matrix(result)
+
+    def __mul__(self, o):
+        if (self.n != o.m):
+            return None
+        
+        result = []
+        for _ in range(self.m):    # Estableciendo filas
+            result.append([])
+
+        # Obteniendo los multiplicadores
+        mult = []
+        for on in range(o.n):
+            mult.append([])
+            for om in range(o.m):
+                mult[on].append(o.matrix[om][on])
+
+        # Realizando la multiplicacion
+        j = 0
+        for mm in range(len(mult)): # Selecciono el vector a mult
+            for sm in range(self.m): # Selecciono la fila
+                temp = 0
+                for i in range(self.n): # Elementos de cada fila
+                    temp += self.matrix[sm][i] * mult[mm][i]
+                result[j].append(temp)
+                j = (j + 1) % (self.m) 
+
+        return Matrix(result)
+
 def reflect(I, N):
     return (I - (N*((I**N)*2))).normal()
 
@@ -89,11 +147,20 @@ def refract(I, N, refractive_index):
     
     return ((I*eta) + (N * (eta * cosi - k**(1/2)))).normal()
 
-def barycentric(A, B, C, P):
-    result = V3(C.x - A.x, B.x - A.x, A.x - P.x) // V3(C.y - A.y, B.y - A.y, A.y - P.y)
-    cx, cy, cz = result.cx, result.cy, result.cz
+def crossProduct(A, B):
+    cx = (A.y * B.z) - (A.z * B.y)
+    cy = (A.z * B.x) - (A.x * B.z)
+    cz = (A.x * B.y) - (A.y * B.x)
+    return cx, cy, cz
 
-    if cz == 0: return -1, -1, -1
+def barycentric(A, B, C, P):
+    cx, cy, cz = crossProduct(
+        V3(C.x - A.x, B.x - A.x, A.x - P.x),
+        V3(C.y - A.y, B.y - A.y, A.y - P.y)
+    )
+
+    if cz == 0:
+        return -1, -1, -1
 
     u = cx/cz
     v = cy/cz
