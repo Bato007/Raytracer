@@ -161,12 +161,15 @@ class Cube(object):
         return intersect
 
 class Triangle(object):
-    def __init__(self, points, normals, material):
+    def __init__(self, points, material):
         self.A, self.B, self.C = points
         self.center = (points[0] + points[1] + points[2]) / 3
-        self.normal = (normals[0] + normals[1] + normals[2]) / 3
+        self.normal = V3(*crossProduct((self.B - self.A), (self.C - self.A))).normal()
         self.material = material
-        
+    
+    def __repr__(self):
+        return '%s, %s, %s' %(self.A, self.B, self.C)
+
     def ray_intersect(self, origin, direction):
         den = direction ** self.normal
         if abs(den) > 0.01:

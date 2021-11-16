@@ -48,25 +48,13 @@ class Obj(object):
             dot = self.vertices[f]
             for i in range(len(dot)): dot[i] = (dot[i] * scale[i]) + move[i]
             C = V3(*dot)
-            f = face[3][0] - 1
-            dot = self.vertices[f]
-            for i in range(len(dot)): dot[i] = (dot[i] * scale[i]) + move[i]
-            D = V3(*dot)
 
-            # Ahora las normales
-            tn = face[0][2] - 1
-            normal = self.normal[tn]      
-            nA = V3(*normal)
-            tn = face[1][2] - 1
-            normal = self.normal[tn]      
-            nB = V3(*normal)
-            tn = face[2][2] - 1
-            normal = self.normal[tn]      
-            nC = V3(*normal)
-            tn = face[0][2] - 1
-            normal = self.normal[tn]      
-            nD = V3(*normal)
+            self.triangles.append(Triangle(points=(A, B, C), material=material))
 
-            self.triangles.append(Triangle(points=(A, B, C), normals=(nA, nB, nC), material=material))
-            self.triangles.append(Triangle(points=(A, C, D), normals=(nA, nC, nD), material=material))
+            if len(face) == 4:
+                f = face[3][0] - 1
+                dot = self.vertices[f]
+                for i in range(len(dot)): dot[i] = (dot[i] * scale[i]) + move[i]
+                D = V3(*dot)
+                self.triangles.append(Triangle(points=(A, C, D), material=material))
         return self.triangles

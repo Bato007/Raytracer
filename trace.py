@@ -2,6 +2,7 @@ from lib import *
 from figures import *
 from vectors import *
 from obj import *
+from random import random
 from math import pi, tan
 
 MAX_RECURSION_DEPTH = 3
@@ -54,14 +55,15 @@ class Raytracer(object):
         else:
             refract_color = color(0, 0, 0)
 
-        shadow_origin = (intersect.point - offset_normal) if (light_dir ** intersect.normal) < 0 else (intersect.point + offset_normal)
-        shadow_material, shwadow_intersect = self.scene_intersect(shadow_origin, light_dir)
-        shadow_intensity = 0
+        # shadow_origin = (intersect.point - offset_normal) if (light_dir ** intersect.normal) < 0 else (intersect.point + offset_normal)
+        # shadow_material, shwadow_intersect = self.scene_intersect(shadow_origin, light_dir)
+        # shadow_intensity = 0
 
-        if shadow_material and (((shwadow_intersect.point - shadow_origin).len()) < light_distance):
-            shadow_intensity = 0.9
+        # if shadow_material and (((shwadow_intersect.point - shadow_origin).len()) < light_distance):
+        #     shadow_intensity = 0.9
 
-        intensity = self.light.intensity * max(0, (light_dir ** intersect.normal)) * (1 - shadow_intensity)
+        # intensity = self.light.intensity * max(0, (light_dir ** intersect.normal)) * (1 - shadow_intensity)
+        intensity = 1
 
         specular_reflection = reflect(light_dir, intersect.normal)
         speular_intensit = self.light.intensity * (
@@ -101,7 +103,7 @@ class Raytracer(object):
 
                 # Para pintar
                 direction = V3(i, j, -1).normal()
-                paint_color = self.cast_ray(V3(0, 0, 0), direction)
+                paint_color = self.cast_ray(V3(0, 0, 10), direction)
                 self.point(x, y, paint_color)
 
 r = Raytracer(200, 200, color(135, 206, 235))
@@ -115,19 +117,21 @@ rubber = Material(color(80, 0, 0), albedo=[0.9, 0.1, 0, 0], spec=10)
 mirror = Material(color(255, 255, 255), albedo=[0, 10, 0.8, 0], spec=1500)
 glass = Material(color(150, 180, 200), albedo=(0, 0.5, 0.1, 0.8), spec=125, refractive_index=1.5)
 iron = Material(color(129,126,121), albedo=[0.95, 0.01, 0.3, 0], spec=100)
+grass = Material(color(52,140,49), albedo=[0.6, 0.2, 0, 0], spec=12)
 
-model = Obj('./block.obj')
-triangles = model.loadTriangles(rubber, (-1, -2, -5))
+model = Obj('./model.obj')
+triangles = model.loadTriangles(rubber)
 
 r.scene = [
-    Cube(V3(3, 3, -15), V3(2, 3, 7), ivory),
-    Cube(V3(3, 1, -8), V3(2, 2, 2), glass),
-    Cube(V3(2, 2, -20), V3(8, 5, 1), mirror),
-    Cube(V3(3, -4, -17), V3(5, 5, 5), iron),
-    Triangle((V3(0, 4, -7), V3(2, 3, -5), V3(-4, -3, -30)), (V3(0, 0, 1), V3(0, 0, 1), V3(0, 0, 1)), rubber)
+    Cube(V3(8, 3, -15), V3(2, 3, 7), ivory),
+    Cube(V3(8, 1, -8), V3(2, 2, 2), glass),
+    Cube(V3(8, 2, -20), V3(8, 5, 1), mirror),
+    Cube(V3(8, -4, -17), V3(5, 5, 5), iron),
+    Triangle((V3(0, -6, -20), V3(5, -7, -20), V3(-4, -10, -20)), grass)
 ]
-# r.scene = triangles
-# r.scene = []
+
+for triangle in triangles:
+    r.scene.append(triangle)
 
 r.render()
 r.write('out')
