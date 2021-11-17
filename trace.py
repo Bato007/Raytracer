@@ -55,15 +55,14 @@ class Raytracer(object):
         else:
             refract_color = color(0, 0, 0)
 
-        # shadow_origin = (intersect.point - offset_normal) if (light_dir ** intersect.normal) < 0 else (intersect.point + offset_normal)
-        # shadow_material, shwadow_intersect = self.scene_intersect(shadow_origin, light_dir)
-        # shadow_intensity = 0
+        shadow_origin = (intersect.point - offset_normal) if (light_dir ** intersect.normal) < 0 else (intersect.point + offset_normal)
+        shadow_material, shwadow_intersect = self.scene_intersect(shadow_origin, light_dir)
+        shadow_intensity = 0
 
-        # if shadow_material and (((shwadow_intersect.point - shadow_origin).len()) < light_distance):
-        #     shadow_intensity = 0.9
+        if shadow_material and (((shwadow_intersect.point - shadow_origin).len()) < light_distance):
+            shadow_intensity = 0.9
 
-        # intensity = self.light.intensity * max(0, (light_dir ** intersect.normal)) * (1 - shadow_intensity)
-        intensity = 1
+        intensity = self.light.intensity * max(0, (light_dir ** intersect.normal)) * (1 - shadow_intensity)
 
         specular_reflection = reflect(light_dir, intersect.normal)
         speular_intensit = self.light.intensity * (
