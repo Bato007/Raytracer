@@ -117,9 +117,10 @@ mirror = Material(color(255, 255, 255), albedo=[0, 10, 0.8, 0], spec=1500)
 glass = Material(color(150, 180, 200), albedo=(0, 0.5, 0.1, 0.8), spec=125, refractive_index=1.5)
 iron = Material(color(129,126,121), albedo=[0.95, 0.01, 0.3, 0], spec=100)
 grass = Material(color(52,140,49), albedo=[0.6, 0.2, 0, 0], spec=12)
+wood = Material(color(202, 164, 114), albedo=[0.5, 0.5, 0, 0], spec=10)
 
-model = Obj('./model.obj')
-triangles = model.loadTriangles(rubber)
+model = Obj('./tv.obj')
+triangles = model.loadTriangles(wood)
 
 r.scene = [
     Cube(V3(8, 3, -15), V3(2, 3, 7), ivory),
@@ -133,4 +134,4 @@ for triangle in triangles:
     r.scene.append(triangle)
 
 r.render()
-r.write('out')
+r.write('out2')
